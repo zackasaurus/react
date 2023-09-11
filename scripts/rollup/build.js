@@ -100,8 +100,8 @@ const errorCodeOpts = {
 
 const closureOptions = {
   compilation_level: 'SIMPLE',
-  language_in: 'ECMASCRIPT_2015',
-  language_out: 'ECMASCRIPT5_STRICT',
+  language_in: 'ECMASCRIPT_2018',
+  language_out: 'ECMASCRIPT_2018',
   env: 'CUSTOM',
   warning_level: 'QUIET',
   apply_input_source_maps: false,
@@ -118,19 +118,11 @@ const babelPlugins = [
   ['@babel/plugin-proposal-class-properties', {loose: true}],
   'syntax-trailing-function-commas',
   // These use loose mode which avoids embedding a runtime.
-  // TODO: Remove object spread from the source. Prefer Object.assign instead.
-  [
-    '@babel/plugin-proposal-object-rest-spread',
-    {loose: true, useBuiltIns: true},
-  ],
+
   ['@babel/plugin-transform-template-literals', {loose: true}],
   // TODO: Remove for...of from the source. It requires a runtime to be embedded.
   '@babel/plugin-transform-for-of',
-  // TODO: Remove array spread from the source. Prefer .apply instead.
-  ['@babel/plugin-transform-spread', {loose: true, useBuiltIns: true}],
   '@babel/plugin-transform-parameters',
-  // TODO: Remove array destructuring from the source. Requires runtime.
-  ['@babel/plugin-transform-destructuring', {loose: true, useBuiltIns: true}],
 ];
 
 const babelToES5Plugins = [

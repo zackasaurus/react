@@ -349,17 +349,22 @@ export function createElement(type, config, children) {
   let propName;
 
   // Reserved names are extracted
-  const props = {};
+  let props = {};
 
   let key = null;
   let ref = null;
   let self = null;
   let source = null;
 
+  let allowPropsToReferenceConfig = true;
+
+  // Children can be more than one argument, and those are transferred onto
+  // the newly allocated props object.
+  const childrenLength = arguments.length - 2;
+
   if (config != null) {
     if (hasValidRef(config)) {
       ref = config.ref;
-
       if (__DEV__) {
         warnIfStringRefCannotBeAutoConverted(config);
       }
@@ -370,20 +375,31 @@ export function createElement(type, config, children) {
 
     self = config.__self === undefined ? null : config.__self;
     source = config.__source === undefined ? null : config.__source;
-    // Remaining properties are added to a new props object
-    for (propName in config) {
-      if (
-        hasOwnProperty.call(config, propName) &&
-        !RESERVED_PROPS.hasOwnProperty(propName)
-      ) {
-        props[propName] = config[propName];
+
+    for (propName in RESERVED_PROPS) {
+      if (hasOwnProperty.call(config, propName)) {
+        allowPropsToReferenceConfig = false;
       }
+    }
+
+    if (type && type.defaultProps) {
+      allowPropsToReferenceConfig = false;
+    }
+
+    if (childrenLength > 0) {
+      allowPropsToReferenceConfig = false;
+    }
+
+    if (allowPropsToReferenceConfig) {
+      props = config;
+    } else {
+      // Remaining properties are added to a new props object
+      // eslint-disable-next-line no-unused-vars
+      const {key: _key, ref: _ref, __self, __source, ...rest} = config;
+      props = rest;
     }
   }
 
-  // Children can be more than one argument, and those are transferred onto
-  // the newly allocated props object.
-  const childrenLength = arguments.length - 2;
   if (childrenLength === 1) {
     props.children = children;
   } else if (childrenLength > 1) {
